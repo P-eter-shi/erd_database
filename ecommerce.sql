@@ -2,118 +2,119 @@
 --USE ecommerceDB;
 
 
---brand table
-CREATE TABLE brand(
+--Brand table
+CREATE TABLE Brand(
     brandId INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     description TEXT,
     logo_url VARCHAR(200),
-    website_url VARCHAR(200)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
---product table
-CREATE TABLE product(
-    ProductId INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100)  NOT NULL,
+--Product table
+CREATE TABLE Product(
+    productId INT PRIMARY KEY AUTO_INCREMENT,
+    product_name VARCHAR(100)  NOT NULL,
+    brand_id,
+    FOREIGN KEY(brand_id) REFERENCES Brand(brand_id),
     basePrice DECIMAL(10,2),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    brandId INT,
-    FOREIGN KEY(brandId) REFERENCES brand(brandId)
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 
---product_image table
-CREATE TABLE product_image(
-    imageId INT PRIMARY KEY AUTO_INCREMENT,
-    file_path VARCHAR(200) NOT NULL,
-    productId INT NOT NULL,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY(productId) REFERENCES Product(productId) 
+--Product_image table
+CREATE TABLE Product_image(
+    product_image_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_item_id VARCHAR(200) NOT NULL,
+    image_url VARCHAR(200),
+    alt_text VARCHAR(200),
+    is_primary BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
---attribute_category table
-CREATE TABLE attribute_category(
-    attrCategId INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100),
+--Attribute_category table
+CREATE TABLE Attribute_category(
+    attribute_category_id INT PRIMARY KEY AUTO_INCREMENT,
+    category_name VARCHAR(100),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+--Attribute_type table
+CREATE TABLE Attribute_type(
+    attribute_type_id INT PRIMARY KEY AUTO_INCREMENT,
+    type_name VARCHAR(100),
     description TEXT
 );
 
---attribute_type table
-CREATE TABLE attribute_type(
-    typeId INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100),
+--Product_atrribute table
+CREATE TABLE Product_atrribute(
+    product_attribute_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id INT ,
+    attribute_category_id,
+    attribute_type_id,
+    attribute_name VARCHAR(100) ,
+    atrribute_value VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(product_id) REFERENCES Product(product_id),
+    FOREIGN KEY(attribute_category_id) REFERENCES Attribute_category(attribute_category_id),
+    FOREIGN KEY(attribute_type_id) REFERENCES Attribute_type(attribute_type_id)
+);
+
+--Color table
+CREATE TABLE Color(
+    color_id INT PRIMARY KEY AUTO_INCREMENT,
+    color_name VARCHAR(50),
+    color_code VARCHAR(7),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-Pproduct_category table
+CREATE TABLE Product_category(
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
+    category_name VARCHAR(100),
+    parent_category_id,
     description TEXT,
-    attrCategId INT,
-    FOREIGN KEY(attrCategId) REFERENCES attribute_category(attrCategId)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(parent_category_id) REFERENCES Product_category(category_id) ON DELETE SET NULL
 );
 
---product_atrribute table
-CREATE TABLE product_atrribute(
-    attributeId INT PRIMARY KEY AUTO_INCREMENT,
-    productId INT 
-    attribute_name VARCHAR(100) 
-    atrribute_value VARCHAR(100)
-    unit VARCHAR(50),
-    FOREIGN KEY(productId) REFERENCES product(productId)
-);
-
---color table
-CREATE TABLE color(
-    colorId INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50),
-    hexValue VARCHAR(7),
-    productId INT,
-    FOREIGN KEY(productId) REFERENCES product(ProductId)
-);
-
---product_category table
-CREATE TABLE product_category(
-    categoryId INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100),
-    category_type VARCHAR(100)
-);
-
---size_category table
-CREATE TABLE size_category(
-    sizeId INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50),
+--Size_category table
+CREATE TABLE Size_category(
+    size_category_id INT PRIMARY KEY AUTO_INCREMENT,
+    category_name VARCHAR(50),
     description TEXT,
-    categoryId INT,
-    FOREIGN KEY(categoryId) REFERENCES product_category(categoryId)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
---product_item table
-CREATE TABLE product_item(
-    itemId INT PRIMARY KEY AUTO_INCREMENT,
-    stock_quantity INT,
+--Product_item table
+CREATE TABLE Product_item(
+    product_item_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id,
     is_active BOOLEAN DEFAULT TRUE,
-    productId INT,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    sizeId INT,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    colorId INT,
-    FOREIGN KEY(productId) REFERENCES product(productId),
-    FOREIGN KEY(sizeId) REFERENCES size_category(sizeId),
-    FOREIGN KEY(colorId) REFERENCES color(colorId),
+    stock_keeping_unit VARCHAR(50) UNIQUE NOT NULL,
+    stock_quantity INT,
+    price DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(product_id) REFERENCES Product(product_id)
 );
 
---product_variation table
-CREATE TABLE product_variation(
-    variationId INT PRIMARY KEY AUTO_INCREMENT,
-    variation_type VARCHAR(100),
-    variation_value VARCHAR(100),
-    colorId INT,
-    sizeId INT,
-    FOREIGN KEY(sizeId) REFERENCES size_category(sizeId),
-    FOREIGN KEY(colorId) REFERENCES color(colorId)
+--Size_option table
+CREATE TABLE Size_option(
+    size_option_id INT PRIMARY KEY AUTO_INCREMENT,
+    size_category_id,
+    size_label VARCHAR(50),
+    sort_order INT,
+    FOREIGN KEY(size_category_id) REFERENCES Size_category(size_category_id)
 );
 
---size_option table
-CREATE TABLE size_option(
-    Id INT PRIMARY KEY AUTO_INCREMENT,
-    value VARCHAR(50),
-    description TEXT,
-    sizeId INT,
-    FOREIGN KEY(sizeId) REFERENCES size_category(sizeId)
+--Product_variation table
+CREATE TABLE Product_variation(
+    product_variation_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_item_id,
+    color_id INT,
+    size_option_id INT,
+    FOREIGN KEY(product_item_id) REFERENCES Product_item(product_item_id),
+    FOREIGN KEY(color_id) REFERENCES Color(color_id),
+    FOREIGN KEY(size_option_id) REFERENCES Size_option(size_option_id)
 );
