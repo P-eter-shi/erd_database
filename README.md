@@ -28,42 +28,45 @@ E-commerce Database Design
 
 The following tables must be created for the e-commerce platform:
 
-* **product_image**
+* **Product_image**
   Stores product image URLs or file references
 
-* **color**
+* **Color**
   Manages available color options
 
-* **product_category**
+* **Product_category**
   Classifies products into categories (e.g., clothing, electronics)
 
-* **product**
+* **Product**
   Stores general product details such as name, brand, and base price
 
-* **product_item**
+* **Product_item**
   Represents purchasable items with specific variations
 
-* **brand**
+* **Brand**
   Stores brand-related information
 
-* **product_variation**
+* **Product_variation**
   Links a product to its variations (e.g., size, color)
 
-* **size_category**
+* **Size_category**
   Groups sizes into categories (e.g., clothing sizes, shoe sizes)
 
-* **size_option**
+* **Size_option**
   Lists specific sizes (e.g., S, M, L, 42)
 
-* **product_attribute**
+* **Product_attribute**
   Stores custom product attributes (e.g., material, weight)
 
-* **attribute_category**
+* **Attribute_category**
   Groups attributes into categories (e.g., physical, technical)
 
-* **attribute_type**
+* **Attribute_type**
   Defines attribute data types (e.g., text, number, boolean)
 
+## Relationships and directionality
+  - **one-to-many**:
+       
 
  
 
